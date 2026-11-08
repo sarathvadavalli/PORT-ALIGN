@@ -1,0 +1,24 @@
+{% extends 'myapp/base.html' %}
+{% block title %}Welcome back · PortAlign{% endblock %}
+{% block content %}
+<div class="auth-layout">
+    <section class="auth-story">
+        <p class="eyebrow"><span class="status-dot"></span> A little perspective. A clearer portfolio.</p>
+        <h1>Your next move<br>starts with <em>clarity.</em></h1>
+        <p class="story-description">A thoughtful space to understand your investments and keep your financial picture in focus.</p>
+        <div class="balance-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-center">P<span>↗</span></div><span class="art-label art-label-one">Perspective</span><span class="art-label art-label-two">Balance</span><span class="art-point"></span></div>
+        <p class="story-footnote">A more considered approach to investing.</p>
+    </section>
+    <section class="form-card login-card" aria-labelledby="login-heading">
+        <span class="section-number">01 / YOUR ACCOUNT</span>
+        <h2 id="login-heading">Welcome back.</h2>
+        <p class="card-description">Good to see you again. Log in to your account.</p>
+        <form method="post" class="account-form">
+            {% csrf_token %}{% include 'myapp/_fields.html' %}
+            <button class="button button-primary" type="submit">Log in <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="form-switch">New to PortAlign? <a href="{% url 'register' %}">Create an account</a></p>
+        <div class="card-note"><span aria-hidden="true">◇</span> Your own space. Your own perspective.</div>
+    </section>
+</div>
+{% endblock %}

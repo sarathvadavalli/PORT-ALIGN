@@ -1,0 +1,24 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+{% block title %}Create an account · PortAlign{% endblock %}
+{% block content %}
+<div class="auth-layout registration-layout">
+    <section class="auth-story">
+        <p class="eyebrow"><span class="status-dot"></span> Make room for a clearer view</p>
+        <h1>A fresh start.<br>A <em>balanced</em><br>perspective.</h1>
+        <p class="story-description">Create your account and take the first step toward a more thoughtful investment journey.</p>
+        <div class="story-steps"><div><span>01</span><p>Create your account</p></div><div><span>02</span><p>Make your profile your own</p></div><div><span>03</span><p>Find your perspective</p></div></div>
+    </section>
+    <section class="form-card" aria-labelledby="register-heading">
+        <span class="section-number">LET'S GET ACQUAINTED</span>
+        <h2 id="register-heading">Your journey begins here.</h2>
+        <p class="card-description">A few details to make this space yours.</p>
+        <form method="post" class="account-form two-column-form" id="registration" data-availability-url="{% url 'availability' %}">
+            {% csrf_token %}{% include 'myapp/_fields.html' %}
+            <button class="button button-primary" type="submit">Create account <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="form-switch">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+    </section>
+</div>
+<script src="{% static 'myapp/availability.js' %}" defer></script>
+{% endblock %}

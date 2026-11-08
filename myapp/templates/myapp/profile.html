@@ -1,0 +1,9 @@
+{% extends 'myapp/base.html' %}
+{% block title %}Your profile · PortAlign{% endblock %}
+{% block content %}
+<section class="page-heading"><p class="eyebrow"><span class="status-dot"></span> ACCOUNT SETTINGS</p><h1>A profile that's <em>you.</em></h1><p>Keep your details current and your preferences in focus.</p></section>
+<div class="profile-layout">
+    <aside class="profile-sidebar"><div class="avatar" aria-hidden="true">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div><h2>{{ user.first_name }} {{ user.last_name }}</h2><p>@{{ user.username }}</p><div class="investor-id"><span class="section-number">INVESTOR ID</span><strong>{{ investor.investor_id }}</strong></div><div class="profile-tip"><span aria-hidden="true">↗</span><h3>Start with what matters.</h3><p>Your risk profile reflects your comfort with investment risk. Choose the level that fits you.</p></div></aside>
+    <section class="form-card profile-card" aria-labelledby="profile-heading"><div class="card-heading"><div><span class="section-number">THE DETAILS</span><h2 id="profile-heading">Personal information</h2></div><span class="small-tag">Your profile</span></div><p class="card-description">Update your account information and investment preferences.</p><form method="post" class="account-form two-column-form">{% csrf_token %}{% include 'myapp/_fields.html' %}<div class="form-actions"><a href="{% url 'dashboard' %}" class="text-link">Back to dashboard</a><button class="button button-primary" type="submit">Save changes <span aria-hidden="true">→</span></button></div></form></section>
+</div>
+{% endblock %}
