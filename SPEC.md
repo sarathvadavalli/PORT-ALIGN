@@ -1,7 +1,7 @@
 # SPEC.md — On-Demand Portfolio Rebalancing Recommendation System
 
-**Status:** Draft v1.2 — decisions 1–6 confirmed; remaining policy decisions pending  
-**System type:** Educational portfolio evaluation and rebalancing simulation  
+**Status:** Draft v1.2 — decisions 1–6 confirmed; remaining policy decisions pending
+**System type:** Educational portfolio evaluation and rebalancing simulation
 **Operating model:** On-demand; no automatic trading or market-price-triggered proposals
 
 ## 1. Goal
@@ -20,12 +20,12 @@ The system provides **recommendations and simulations only**. It does not execut
 
 ## 2. Target users
 
-| User | Primary needs |
-| --- | --- |
-| **Investor / account holder** | Request an evaluation of their own portfolio; review current allocation, drift, and any available proposal. |
-| **Operations analyst** | Evaluate authorized portfolios, request proposals, inspect calculations, and review exceptions. |
-| **Risk / compliance reviewer** | Review proposal policy compliance, constraint violations, and decision history. |
-| **System administrator** | Maintain authorized reference/configuration data and oversee data quality and system operations. |
+| User                                 | Primary needs                                                                                               |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Investor / account holder**  | Request an evaluation of their own portfolio; review current allocation, drift, and any available proposal. |
+| **Operations analyst**         | Evaluate authorized portfolios, request proposals, inspect calculations, and review exceptions.             |
+| **Risk / compliance reviewer** | Review proposal policy compliance, constraint violations, and decision history.                             |
+| **System administrator**       | Maintain authorized reference/configuration data and oversee data quality and system operations.            |
 
 **Access principle:** A user may only access portfolios and actions for which they are authorized. Detailed role permissions remain to be finalized.
 
@@ -66,34 +66,33 @@ The system provides **recommendations and simulations only**. It does not execut
 
 ## 4. Functional requirements
 
-| ID | Requirement | Expected behavior |
-| --- | --- | --- |
-| FR-01 | On-demand initiation | Accept an authorized request identifying the portfolio and whether a proposal is requested. |
-| FR-02 | Portfolio retrieval | Retrieve the portfolio's investor profile, instruments, holdings, and target allocation. |
-| FR-03 | Market-price selection | Select prices applicable to the evaluation's as-of date and identify missing or stale prices. |
-| FR-04 | Input validation | Check valid IDs/relationships, quantities, target weights, dates, and required data before using them. |
-| FR-05 | Current valuation | Calculate instrument and portfolio values from holdings and prices; calculate current asset-class weights. |
-| FR-06 | Drift analysis | Calculate differences between current and target weights and identify over-/under-allocated asset classes. |
-| FR-07 | Policy eligibility | Flag drift outside ±5 percentage points as beyond the safe limit. An explicit rebalancing request is allowed if any asset-class drift is outside ±2 points, including when all drifts are within ±5 points. If all drifts are within ±2 points, do not propose trades. |
-| FR-08 | Proposal generation | Only on explicit request and when eligible, generate candidate trades to bring each asset-class drift within ±2 percentage points without violating constraints. |
-| FR-09 | Constraint validation | Apply instrument-specific minimum trade sizes, available holdings, applicable fee rules, and other constraints whose detailed policies remain pending. No external cash contributions are allowed. |
-| FR-10 | Fee estimation | Calculate estimated fees for buys and sells, deduct them from portfolio cash (including proceeds of sales), and include them in the proposal costs shown to the investor. Exact fee schedule and rounding rules remain pending. |
-| FR-11 | Post-trade simulation | Simulate sales, available cash, buys, fees, holdings, and post-trade allocation; if available cash cannot cover required purchases and fees, roll back the simulated rebalancing without partially applying trades and display "No enough cash available to buy". |
-| FR-12 | Outcome classification | Distinguish evaluated-only, within-safe-limit with optional requested rebalance, no-rebalance-needed (all drifts within ±2 points), proposal awaiting confirmation, infeasible proposal, and data/policy exceptions. |
-| FR-13 | Reviewable records | Save evaluation inputs/references, calculated results, proposal details, simulation, validation findings, timestamps, and status. |
-| FR-14 | Historical traceability | Preserve prior evaluations, proposals, and status changes rather than overwriting their history. |
-| FR-15 | Authorized review | Allow permitted users to retrieve past evaluations, proposals, and explanations. |
-| FR-16 | Synthetic data support | Support the problem statement's synthetic investors, portfolios, instruments, holdings, prices, policies, and labeled anomalies. |
-| FR-17 | Reproducible validation | Validate generated data and compare repeated fixed-seed generation runs for consistent outputs. |
-| FR-18 | Investor confirmation | Before an eligible proposal proceeds to review, show estimated rebalancing costs and ask the investor to confirm; do not treat confirmation as actual trade execution. |
-| FR-19 | Safe-limit messaging | When every asset-class drift is within ±5 points, show that the portfolio is within the safe limit. If any drift exceeds ±2 points, an explicitly requested proposal may still be generated. |
-| FR-20 | User registration | Provide a registration form requiring username, email, password, first name, and last name; phone number is optional. Validate required fields and prevent duplicate usernames and email addresses before creating an account. |
-| FR-21 | Debounced availability checks | Check username and email availability independently after the user pauses typing in each respective field (debouncing). Show field-specific availability/duplicate feedback. Repeat uniqueness checks on final submission to prevent race conditions; debouncing is not a substitute for server-side validation. |
-| FR-22 | User login and session authentication | Accept a username **or** email address plus password. Determine the identifier type, retrieve the matching user, verify the password using Django authentication/password hashing, establish a Django-managed authenticated session on success, and reject invalid credentials without disclosing whether an account exists. |
-| FR-23 | Authenticated dashboard and profile access | Redirect the user to the dashboard after successful login. Provide a profile-view option accessible to the authenticated user. Protect dashboard, profile, and portfolio actions using Django session authentication and applicable authorization checks. |
-| FR-24 | View and edit profile | Display the authenticated user's username, email, first name, last name, optional phone number, and risk profile sourced from the linked `InvestorProfile`. Allow the user to edit and save these details, validate submitted values, and enforce username/email uniqueness on updates. The allowed risk-profile values and whether changes require additional review remain to be defined. |
-| FR-25 | Automatic InvestorProfile Creation | Upon successful registration, the system shall automatically create an InvestorProfile linked one-to-one with the newly registered Django User. The system shall generate a unique, immutable investor ID following the INV-000001 convention, using concurrency-safe sequence allocation. User creation and investor-profile creation shall be atomic.
-
+| ID    | Requirement                                | Expected behavior                                                                                                                                                                                                                                                                                                                                                                             |
+| ----- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-01 | On-demand initiation                       | Accept an authorized request identifying the portfolio and provide a rebalance proposal if requested.                                                                                                                                                                                                                                                                                         |
+| FR-02 | Portfolio retrieval                        | Retrieve the portfolio's investor profile, instruments, holdings, and target allocation.                                                                                                                                                                                                                                                                                                      |
+| FR-03 | Market-price selection                     | Select prices applicable to the evaluation's as-of date and identify missing or stale prices.                                                                                                                                                                                                                                                                                                 |
+| FR-04 | Input validation                           | Check valid IDs/relationships, quantities, target weights, dates, and required data before using them.                                                                                                                                                                                                                                                                                        |
+| FR-05 | Current valuation                          | Calculate instrument and portfolio values from holdings and prices; calculate current asset-class weights.                                                                                                                                                                                                                                                                                    |
+| FR-06 | Drift analysis                             | Calculate differences between current and target weights and identify over-/under-allocated asset classes.                                                                                                                                                                                                                                                                                    |
+| FR-07 | Policy eligibility                         | Flag drift outside ±5 percentage points as beyond the safe limit. An explicit rebalancing request is allowed if any asset-class drift is outside ±2 points, including when all drifts are within ±5 points. If all drifts are within ±2 points, do not propose trades.                                                                                                                    |
+| FR-08 | Proposal generation                        | Only on explicit request and when eligible, generate candidate trades to bring each asset-class drift within ±2 percentage points without violating constraints.                                                                                                                                                                                                                             |
+| FR-09 | Constraint validation                      | Apply instrument-specific minimum trade sizes, available holdings, applicable fee rules, and other constraints whose detailed policies remain pending. No external cash contributions are allowed.                                                                                                                                                                                            |
+| FR-10 | Fee estimation                             | Calculate estimated fees for buys and sells, deduct them from portfolio cash (including proceeds of sales), and include them in the proposal costs shown to the investor. Exact fee schedule and rounding rules remain pending.                                                                                                                                                               |
+| FR-11 | Post-trade simulation                      | Simulate sales, available cash, buys, fees, holdings, and post-trade allocation; if available cash cannot cover required purchases and fees, roll back the simulated rebalancing without partially applying trades and display "No enough cash available to buy".                                                                                                                             |
+| FR-12 | Outcome classification                     | Distinguish evaluated-only, within-safe-limit with optional requested rebalance, no-rebalance-needed (all drifts within ±2 points), proposal awaiting confirmation, infeasible proposal, and data/policy exceptions.                                                                                                                                                                         |
+| FR-13 | Reviewable records                         | Save evaluation inputs/references, calculated results, proposal details, simulation, validation findings, timestamps, and status.                                                                                                                                                                                                                                                             |
+| FR-14 | Historical traceability                    | Preserve prior evaluations, proposals, and status changes rather than overwriting their history.                                                                                                                                                                                                                                                                                              |
+| FR-15 | Authorized review                          | Allow permitted users to retrieve past evaluations, proposals, and explanations.                                                                                                                                                                                                                                                                                                              |
+| FR-16 | Synthetic data support                     | Support the problem statement's synthetic investors, portfolios, instruments, holdings, prices, policies, and labeled anomalies.                                                                                                                                                                                                                                                              |
+| FR-17 | Reproducible validation                    | Validate generated data and compare repeated fixed-seed generation runs for consistent outputs.                                                                                                                                                                                                                                                                                               |
+| FR-18 | Investor confirmation                      | Before an eligible proposal proceeds to review, show estimated rebalancing costs and ask the investor to confirm; do not treat confirmation as actual trade execution.                                                                                                                                                                                                                        |
+| FR-19 | Safe-limit messaging                       | When every asset-class drift is within ±5 points, show that the portfolio is within the safe limit. If any drift exceeds ±2 points, an explicitly requested proposal may still be generated.                                                                                                                                                                                                |
+| FR-20 | User registration                          | Provide a registration form requiring username, email, password, first name, and last name; phone number is optional. Validate required fields and prevent duplicate usernames and email addresses before creating an account.                                                                                                                                                                |
+| FR-21 | Debounced availability checks              | Check username and email availability independently after the user pauses typing in each respective field (debouncing). Show field-specific availability/duplicate feedback. Repeat uniqueness checks on final submission to prevent race conditions; debouncing is not a substitute for server-side validation.                                                                              |
+| FR-22 | User login and session authentication      | Accept a username **or** email address plus password. Determine the identifier type, retrieve the matching user, verify the password using Django authentication/password hashing, establish a Django-managed authenticated session on success, and reject invalid credentials without disclosing whether an account exists.                                                            |
+| FR-23 | Authenticated dashboard and profile access | Redirect the user to the dashboard after successful login. Provide a profile-view option accessible to the authenticated user. Protect dashboard, profile, and portfolio actions using Django session authentication and applicable authorization checks.                                                                                                                                     |
+| FR-24 | View and edit profile                      | Display the authenticated user's username, email, first name, last name, optional phone number, and risk profile sourced from the linked `InvestorProfile`. Allow the user to edit and save these details, validate submitted values, and enforce username/email uniqueness on updates. The allowed risk-profile values and whether changes require additional review remain to be defined. |
+| FR-25 | Automatic InvestorProfile Creation         | Upon successful registration, the system shall automatically create an InvestorProfile linked one-to-one with the newly registered Django User. The system shall generate a unique, immutable investor ID following the INV-000001 convention, using concurrency-safe sequence allocation. User creation and investor-profile creation shall be atomic.                                       |
 
 ### Confirmed policy and decision rules (decisions 1–6)
 
@@ -118,24 +117,24 @@ The system provides **recommendations and simulations only**. It does not execut
 
 ## 5. Non-functional requirements
 
-| ID | Category | Requirement |
-| --- | --- | --- |
-| NFR-01 | Correctness | Derived values must reconcile to source holdings, prices, trades, and fees within documented numerical tolerances. |
-| NFR-02 | Determinism | Identical inputs, as-of date, policy version, and calculation version must produce the same result. |
-| NFR-03 | Traceability | Every decision must be attributable to an evaluation request, input data versions/snapshot, applied rules, and timestamps. |
-| NFR-04 | Data integrity | Enforce primary-key uniqueness, foreign-key validity, allowed values, date ordering, and valid lifecycle transitions. |
-| NFR-05 | Security | Enforce authentication and authorization for portfolio access, configuration changes, and review actions. |
-| NFR-06 | Privacy | Avoid real personal or confidential data in synthetic datasets; protect any user-associated portfolio data. |
-| NFR-07 | Reliability | Handle incomplete prices, inconsistent holdings, invalid targets, and constraint conflicts with explicit error/exception outcomes. |
-| NFR-08 | Performance | Support interactive on-demand evaluation; response-time targets and concurrency limits require measurement and agreement. |
-| NFR-09 | Scalability | Support the baseline educational dataset: approximately 1,000 portfolios, 2,000 instruments, 5,000 holdings, and 250 trading days of prices; allow scale to be parameterized. |
-| NFR-10 | Auditability | Preserve immutable historical records or append-only events for material decisions and state changes. |
-| NFR-11 | Reproducibility | Use a documented fixed seed for synthetic data; repeated runs must match in row counts/checksums. |
-| NFR-12 | Maintainability | Document data dictionary, IDs, relationships, policy assumptions, evaluation logic, and validation rules. |
-| NFR-13 | Explainability | Clearly expose drift, policy decisions, trade rationales, fees, post-trade effects, and exceptions. |
-| NFR-14 | Lawful provenance | If external data is used, document source, license/terms, retrieval date, attribution, and transformations. |
-| NFR-15 | Account security | Use Django password hashing, session management, CSRF protection, server-side form validation, and access controls; do not store plaintext passwords. |
-| NFR-16 | Registration integrity | Enforce username and email uniqueness at the persistence layer as well as in debounced checks and form submission. |
+| ID     | Category               | Requirement                                                                                                                                                                   |
+| ------ | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NFR-01 | Correctness            | Derived values must reconcile to source holdings, prices, trades, and fees within documented numerical tolerances.                                                            |
+| NFR-02 | Determinism            | Identical inputs, as-of date, policy version, and calculation version must produce the same result.                                                                           |
+| NFR-03 | Traceability           | Every decision must be attributable to an evaluation request, input data versions/snapshot, applied rules, and timestamps.                                                    |
+| NFR-04 | Data integrity         | Enforce primary-key uniqueness, foreign-key validity, allowed values, date ordering, and valid lifecycle transitions.                                                         |
+| NFR-05 | Security               | Enforce authentication and authorization for portfolio access, configuration changes, and review actions.                                                                     |
+| NFR-06 | Privacy                | Avoid real personal or confidential data in synthetic datasets; protect any user-associated portfolio data.                                                                   |
+| NFR-07 | Reliability            | Handle incomplete prices, inconsistent holdings, invalid targets, and constraint conflicts with explicit error/exception outcomes.                                            |
+| NFR-08 | Performance            | Support interactive on-demand evaluation; response-time targets and concurrency limits require measurement and agreement.                                                     |
+| NFR-09 | Scalability            | Support the baseline educational dataset: approximately 1,000 portfolios, 2,000 instruments, 5,000 holdings, and 250 trading days of prices; allow scale to be parameterized. |
+| NFR-10 | Auditability           | Preserve immutable historical records or append-only events for material decisions and state changes.                                                                         |
+| NFR-11 | Reproducibility        | Use a documented fixed seed for synthetic data; repeated runs must match in row counts/checksums.                                                                             |
+| NFR-12 | Maintainability        | Document data dictionary, IDs, relationships, policy assumptions, evaluation logic, and validation rules.                                                                     |
+| NFR-13 | Explainability         | Clearly expose drift, policy decisions, trade rationales, fees, post-trade effects, and exceptions.                                                                           |
+| NFR-14 | Lawful provenance      | If external data is used, document source, license/terms, retrieval date, attribution, and transformations.                                                                   |
+| NFR-15 | Account security       | Use Django password hashing, session management, CSRF protection, server-side form validation, and access controls; do not store plaintext passwords.                         |
+| NFR-16 | Registration integrity | Enforce username and email uniqueness at the persistence layer as well as in debounced checks and form submission.                                                            |
 
 ## 6. Inputs
 
@@ -146,16 +145,15 @@ The system provides **recommendations and simulations only**. It does not execut
 - **Login:** Username or email, and password.
 - **Profile update:** Editable account fields, optional phone number, and linked investor risk profile; specific risk-profile values and edit governance are pending.
 
-
 ### 6.1 Request inputs
 
-| Input | Purpose | Required? |
-| --- | --- | --- |
-| Portfolio identifier | Identifies portfolio to evaluate | Yes |
-| Requesting user/authorization context | Determines permitted access | Yes |
-| Evaluation as-of date | Determines applicable holdings, targets, and prices | Yes; may default to current date by explicit product policy |
-| Generate proposal flag | Separates evaluation-only from proposal-requested behavior | Yes |
-| Policy/configuration reference | Selects applicable eligibility and constraint rules | Yes; may be resolved from active configuration |
+| Input                                 | Purpose                                                    | Required?                                                   |
+| ------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| Portfolio identifier                  | Identifies portfolio to evaluate                           | Yes                                                         |
+| Requesting user/authorization context | Determines permitted access                                | Yes                                                         |
+| Evaluation as-of date                 | Determines applicable holdings, targets, and prices        | Yes; may default to current date by explicit product policy |
+| Generate proposal flag                | Separates evaluation-only from proposal-requested behavior | Yes                                                         |
+| Policy/configuration reference        | Selects applicable eligibility and constraint rules        | Yes; may be resolved from active configuration              |
 
 ### 6.2 Domain data inputs
 
@@ -184,15 +182,14 @@ The original problem statement identifies these entities along with **RebalanceP
 
 **Account outcomes:** Successful registration creates an account; duplicates or invalid inputs produce field-specific errors. Successful login creates a Django-authenticated session and opens the dashboard; invalid credentials produce a generic error. Profile view displays account and investor risk details; successful edits persist validated changes, while rejected edits preserve existing values.
 
-
-| Outcome | Meaning | Saved information |
-| --- | --- | --- |
-| **Evaluation completed — no proposal requested** | Current allocation and drift were computed; no trading recommendation was attempted. | Valuation, weights, drift, input references, evaluation status. |
-| **No rebalancing needed** | All asset-class drifts are already within ±2 percentage points, even if a proposal was explicitly requested. | Evaluation, no-rebalance message, policy decision, status. |
-| **Within safe limit — rebalancing optional** | All drifts are within ±5 points, but at least one exceeds ±2 points. Show safe-limit message; proceed with a proposal only on explicit request. | Evaluation, safe-limit message, request decision, and proposal if requested and feasible. |
-| **Proposal awaiting investor confirmation** | Explicitly requested candidate trades passed checks, post-trade drifts meet ±2 points, and estimated costs have been displayed. | Proposed buys/sells, estimated fees, cash effects, expected holdings/weights, remaining drift, validation results, confirmation state. |
-| **No feasible proposal** | Funding or other constraints prevent a compliant trade set; an insufficient-cash simulation is rolled back with the exact message "No enough cash available to buy". | Evaluation, attempted decision/constraint findings, reason, rollback outcome, status. |
-| **Evaluation exception** | Missing/stale/invalid data or another blocking condition prevents a reliable result. | Identified issues, affected records, severity, status, and available partial diagnostics. |
+| Outcome                                                 | Meaning                                                                                                                                                              | Saved information                                                                                                                      |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Evaluation completed — no proposal requested** | Current allocation and drift were computed; no trading recommendation was attempted.                                                                                 | Valuation, weights, drift, input references, evaluation status.                                                                        |
+| **No rebalancing needed**                         | All asset-class drifts are already within ±2 percentage points, even if a proposal was explicitly requested.                                                        | Evaluation, no-rebalance message, policy decision, status.                                                                             |
+| **Within safe limit — rebalancing optional**     | All drifts are within ±5 points, but at least one exceeds ±2 points. Show safe-limit message; proceed with a proposal only on explicit request.                    | Evaluation, safe-limit message, request decision, and proposal if requested and feasible.                                              |
+| **Proposal awaiting investor confirmation**       | Explicitly requested candidate trades passed checks, post-trade drifts meet ±2 points, and estimated costs have been displayed.                                     | Proposed buys/sells, estimated fees, cash effects, expected holdings/weights, remaining drift, validation results, confirmation state. |
+| **No feasible proposal**                          | Funding or other constraints prevent a compliant trade set; an insufficient-cash simulation is rolled back with the exact message "No enough cash available to buy". | Evaluation, attempted decision/constraint findings, reason, rollback outcome, status.                                                  |
+| **Evaluation exception**                          | Missing/stale/invalid data or another blocking condition prevents a reliable result.                                                                                 | Identified issues, affected records, severity, status, and available partial diagnostics.                                              |
 
 ### Expected evaluation report
 

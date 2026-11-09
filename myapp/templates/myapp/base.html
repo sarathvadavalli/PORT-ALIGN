@@ -18,6 +18,8 @@
 <nav class="navigation" aria-label="Main navigation">
 {% if user.is_authenticated %}
 <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
+<a href="{% url 'my_portfolio' %}" {% if request.resolver_match.url_name == 'my_portfolio' %}aria-current="page"{% endif %}>My Portfolio</a>
+<a href="{% url 'target_allocation' %}" {% if request.resolver_match.url_name == 'target_allocation' %}aria-current="page"{% endif %}>Target Allocation</a>
 <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}aria-current="page"{% endif %}>My profile</a>
 <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="nav-button" type="submit">Log out <span aria-hidden="true">↗</span></button></form>
 {% else %}
@@ -26,6 +28,8 @@
 {% endif %}
 </nav>
 </header>
-<main id="main-content" class="page-shell">{% block content %}{% endblock %}</main>
+<main id="main-content" class="page-shell">
+{% if messages %}<div class="notifications" aria-live="polite">{% for message in messages %}<p class="notification">{{ message }}</p>{% endfor %}</div>{% endif %}
+{% block content %}{% endblock %}</main>
 <footer class="site-footer"><span>Clarity for your next move.</span><span>PortAlign &copy; {% now 'Y' %}</span></footer>
 </body></html>

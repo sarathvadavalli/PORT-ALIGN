@@ -1,0 +1,22 @@
+{% extends 'myapp/base.html' %}
+{% block title %}My Portfolio · PortAlign{% endblock %}
+{% block content %}
+<section class="page-heading"><p class="eyebrow"><span class="status-dot"></span> YOUR INVESTMENTS</p><h1>My <em>Portfolio.</em></h1><p>Your holdings and their latest available closing prices, in one place.</p></section>
+{% if portfolio %}
+<div class="portfolio-toolbar"><div><h2>{{ portfolio.portfolio_name }}</h2><span class="account-handle">{{ portfolio.portfolio_id }}</span></div><a class="button button-primary" href="{% url 'target_allocation' %}">Target Allocation <span aria-hidden="true">↗</span></a></div>
+<div class="valuation-grid">
+    <section class="metric-card"><span class="section-number">HOLDINGS MARKET VALUE</span><strong>{{ total_market_value|floatformat:2 }}</strong><p>{% if missing_price_count %}Partial total: {{ missing_price_count }} holding{{ missing_price_count|pluralize }} without a valid price excluded.{% else %}Total of priced holdings.{% endif %} Cash is shown separately.</p></section>
+    <section class="metric-card"><span class="section-number">CASH BALANCE</span><strong>{{ portfolio.cash_balance|floatformat:2 }}</strong><p>Portfolio cash, excluded from holdings market value.</p></section>
+    <section class="metric-card"><span class="section-number">HOLDINGS</span><strong>{{ holdings|length }}</strong><p>Prices dated on or before {{ as_of|date:'j M Y' }}. Each price date is shown below.</p></section>
+</div>
+{% if missing_price_count %}<p class="valuation-warning" role="status">Some holdings have no valid closing price. Their value is unavailable and excluded from the total.</p>{% endif %}
+<section class="holdings-section"><h2>What you hold</h2>
+{% if holdings %}
+<div class="table-scroll" role="region" aria-label="Portfolio holdings" tabindex="0"><table class="holdings-table"><caption class="visually-hidden">Holdings and latest available market prices</caption><thead><tr><th scope="col">Instrument</th><th scope="col">Asset class</th><th scope="col">Currency</th><th scope="col" class="numeric">Quantity</th><th scope="col" class="numeric">Average cost</th><th scope="col" class="numeric">Closing price</th><th scope="col">Price date</th><th scope="col" class="numeric">Market value</th></tr></thead><tbody>
+{% for holding in holdings %}<tr><th scope="row"><strong>{{ holding.instrument.name }}</strong>{% if holding.instrument.symbol %}<span class="instrument-symbol">{{ holding.instrument.symbol }}</span>{% endif %}</th><td>{{ holding.instrument.asset_class.name }}</td><td>{{ holding.instrument.currency }}</td><td class="numeric">{{ holding.quantity|floatformat:'-8' }}</td><td class="numeric">{% if holding.average_cost != None %}{{ holding.average_cost|floatformat:'-6' }}{% else %}Unavailable{% endif %}</td><td class="numeric">{% if holding.latest_price != None %}{{ holding.latest_price|floatformat:'-6' }}{% else %}<span class="unavailable">Unavailable</span>{% endif %}</td><td>{{ holding.latest_price_date|date:'j M Y'|default:'—' }}</td><td class="numeric">{% if holding.market_value != None %}{{ holding.market_value|floatformat:2 }}{% else %}<span class="unavailable">Unavailable</span>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty-state form-card"><h3>No holdings yet.</h3><p>This portfolio has no instruments. Its holdings market value is 0.00.</p></div>{% endif %}
+</section>
+<p class="page-footnote">Closing prices may be from earlier dates. Values reflect stored prices; no live market feed is used.</p>
+{% else %}{% include 'myapp/_no_portfolio.html' %}{% endif %}
+{% endblock %}

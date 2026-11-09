@@ -82,6 +82,7 @@ class Portfolio(models.Model):
     portfolio_name = models.CharField(max_length=100)
     cash_balance = models.DecimalField(max_digits=20, decimal_places=4, default=ZERO,
                                        validators=[MinValueValidator(ZERO)])
+    current_allocation_version = models.PositiveIntegerField(default=0, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 

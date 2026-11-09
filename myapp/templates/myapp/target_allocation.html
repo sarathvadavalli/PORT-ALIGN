@@ -1,0 +1,21 @@
+{% extends 'myapp/base.html' %}
+{% block title %}Target Allocation · PortAlign{% endblock %}
+{% block content %}
+<section class="page-heading"><p class="eyebrow"><span class="status-dot"></span> YOUR DIRECTION</p><h1>Find your <em>balance.</em></h1><p>Set your target allocation across every supported asset class. Your percentages must add up to exactly 100%.</p></section>
+{% if portfolio %}
+<div class="allocation-layout">
+<aside class="allocation-sidebar"><span class="section-number">YOUR PORTFOLIO</span><h2>{{ portfolio.portfolio_name }}</h2><p class="account-handle">{{ portfolio.portfolio_id }}</p><div class="investor-id"><span class="section-number">CURRENT ALLOCATION</span><strong>{% if portfolio.current_allocation_version %}Version {{ portfolio.current_allocation_version }}{% else %}Not set up yet{% endif %}</strong></div><p class="page-footnote">Each change saves a complete new version. Earlier allocations stay preserved.</p><a class="text-link" href="{% url 'my_portfolio' %}">View My Portfolio →</a></aside>
+<section class="form-card allocation-card" aria-labelledby="allocation-heading"><span class="section-number">THE BIGGER PICTURE</span><h2 id="allocation-heading">{% if portfolio.current_allocation_version %}Your target allocation{% else %}Set your first allocation{% endif %}</h2><p class="card-description">Include every asset class, even those you do not hold. Use 0% for classes you do not want to allocate to.</p>
+{% if asset_classes %}
+<form method="post" class="account-form" novalidate>{% csrf_token %}{{ formset.management_form }}
+{% if formset.non_form_errors %}<div class="form-alert" role="alert">{{ formset.non_form_errors }}</div>{% endif %}
+{% if formset.management_form.errors %}<div class="form-alert" role="alert">{{ formset.management_form.errors }}</div>{% endif %}
+<div class="allocation-fields">
+{% for form in formset %}<div class="allocation-row{% if form.errors %} has-error{% endif %}"><div class="allocation-name"><label for="{{ form.target_percentage.id_for_label }}">{{ form.asset_name }}</label><span>Target weight</span></div>{{ form.asset_class }}<div class="percentage-input">{{ form.target_percentage }}<span aria-hidden="true">%</span></div>{% if form.errors %}<div class="field-errors" role="alert">{{ form.errors }}</div>{% endif %}</div>{% endfor %}
+</div>
+<div class="allocation-total"><span>Required total</span><strong>100%</strong></div><div class="form-actions"><a class="text-link" href="{% url 'dashboard' %}">Back to dashboard</a><button class="button button-primary" type="submit">Save allocation <span aria-hidden="true">→</span></button></div>
+</form>
+{% else %}<p class="valuation-warning">No asset classes are configured yet. An allocation cannot be saved.</p>{% endif %}
+</section></div>
+{% else %}{% include 'myapp/_no_portfolio.html' %}{% endif %}
+{% endblock %}

@@ -25,4 +25,6 @@ urlpatterns = [
     path('availability/', views.availability, name='availability'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('profile/', views.profile, name='profile'),
+    path('portfolio/', views.my_portfolio, name='my_portfolio'),
+    path('target-allocation/', views.target_allocation, name='target_allocation'),
 ]
