@@ -13,7 +13,7 @@ from django.core.exceptions import ValidationError
 from .forms import AccountForm, RegistrationForm, ProfileForm, IdentifierAuthenticationForm
 from .models import InvestorProfile, Portfolio, AssetClass, TargetAllocation
 from .allocation_forms import AllocationFormSet
-from .portfolio_services import portfolio_valuation, save_target_allocation
+from .portfolio_services import portfolio_valuation, portfolio_allocation_valuation, save_target_allocation
 
 
 def duplicate_errors(form):
@@ -98,8 +98,25 @@ def my_portfolio(request):
     portfolio = Portfolio.objects.filter(investor__user=request.user).first()
     context = {'portfolio': portfolio}
     if portfolio:
-        context.update(portfolio_valuation(portfolio))
+        valuation = portfolio_valuation(portfolio)
+        context.update(valuation)
+        context['allocation_valuation'] = portfolio_allocation_valuation(portfolio, valuation=valuation)
     return render(request, 'myapp/portfolio.html', context)
+
+
+@never_cache
+@login_required
+@require_http_methods(['POST'])
+def sample_rebalance(request):
+    portfolio = get_object_or_404(Portfolio, investor__user=request.user)
+    valuation = portfolio_allocation_valuation(portfolio)
+    if not valuation['can_compare']:
+        return HttpResponse(valuation['message'], status=400, content_type='text/plain; charset=utf-8')
+    if not valuation['rebalance_allowed']:
+        return HttpResponse('No rebalancing is needed: all asset-class drifts are within ±2 percentage points.',
+                            status=400, content_type='text/plain; charset=utf-8')
+    return HttpResponse('Sample rebalancing request received. No proposal was generated and no trades were executed.',
+                        content_type='text/plain; charset=utf-8')
 
 
 @never_cache

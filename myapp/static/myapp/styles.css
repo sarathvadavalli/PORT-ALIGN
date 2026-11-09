@@ -227,3 +227,26 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
 @media (max-width: 760px) { .portfolio-links, .allocation-layout { grid-template-columns: 1fr; gap: 20px; } .portfolio-toolbar { align-items: start; flex-direction: column; } .allocation-sidebar { padding-top: 0; } .allocation-sidebar .investor-id { margin-top: 10px; } .feature-link { padding: 23px; } }
 @media (max-width: 440px) { .valuation-grid { grid-template-columns: 1fr; gap: 12px; } .metric-card { padding: 20px; } .allocation-row { grid-template-columns: 1fr 115px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+.portfolio-valuation { border-top: 1px solid var(--line); margin-top: 40px; padding-top: 30px; }
+.portfolio-valuation .section-number { color: var(--muted); margin-bottom: 12px; }
+.allocation-overview { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 28px; align-items: start; margin: 26px 0; }
+.allocation-chart { margin: 0; text-align: center; }
+.allocation-chart svg { width: 100%; max-width: 240px; display: block; margin: auto; }
+.chart-track { stroke: #e0e6d8; }
+.chart-center { font: 500 27px 'Segoe UI', sans-serif; fill: var(--ink); }
+.chart-caption { font: 10px 'Segoe UI', sans-serif; fill: var(--muted); }
+.allocation-chart figcaption { color: var(--muted); font-size: 11px; }
+.allocation-chart figcaption strong { display: block; color: var(--ink); font-size: 24px; font-weight: 500; overflow-wrap: anywhere; }
+.allocation-chart figcaption > span { display: block; margin-top: 7px; font-size: 10px; }
+.chart-key { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; }
+.drift-near { color: #225e9c; }
+.drift-over { color: #87530b; }
+.drift-under { color: #863c77; }
+.position-label { font-size: 11px; white-space: nowrap; font-weight: 600; }
+.valuation-actions { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.valuation-actions > div { max-width: 650px; }
+.valuation-actions .page-footnote { margin-bottom: 8px; }
+.valuation-actions form { flex-shrink: 0; }
+.button:disabled { background: #e0e5dc; color: #687263; cursor: not-allowed; }
+.missing-prices { color: #71551e; font-size: 13px; }
+@media (max-width: 1000px) { .allocation-overview { grid-template-columns: 1fr; } .allocation-chart { max-width: 260px; margin: auto; } .valuation-actions { align-items: start; flex-direction: column; } }

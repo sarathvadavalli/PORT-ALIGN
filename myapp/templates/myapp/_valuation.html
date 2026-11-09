@@ -1,0 +1,158 @@
+{% load l10n currency %}
+<section class="portfolio-valuation" aria-labelledby="valuation-heading">
+  <div class="portfolio-toolbar">
+    <div>
+      <span class="section-number">THE BIGGER PICTURE</span>
+      <h2 id="valuation-heading">Portfolio Valuation</h2>
+    </div>
+    <a class="text-link" href="{% url 'my_portfolio' %}#valuation-heading"
+      >Refresh valuation ↻</a
+    >
+  </div>
+  <p
+    class="{% if valuation.recommend_rebalancing or not valuation.can_compare %}valuation-warning{% else %}notification{% endif %}"
+    role="status"
+  >
+    {{ valuation.message }}
+  </p>
+  {% if valuation.missing_instruments %}
+  <ul class="missing-prices">
+    {% for instrument in valuation.missing_instruments %}
+    <li>{{ instrument }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} {% if valuation.allocations %}
+  <div class="allocation-overview">
+    <figure class="allocation-chart">
+      <svg
+        viewBox="0 0 220 220"
+        role="img"
+        aria-labelledby="allocation-chart-title allocation-chart-description"
+      >
+        <title id="allocation-chart-title">
+          Current asset-class allocation
+        </title>
+        <desc id="allocation-chart-description">
+          {% for row in valuation.allocations %}{{ row.asset_class.name }}: {{ row.current_percentage|floatformat:2 }} percent. {% endfor %}
+        </desc>
+        <circle
+          class="chart-track"
+          cx="110"
+          cy="110"
+          r="80"
+          fill="none"
+          stroke-width="25"
+        />
+        {% localize off %}{% for row in valuation.allocations %}
+        {% if row.current_percentage > 0 %}
+        <circle
+          cx="110"
+          cy="110"
+          r="80"
+          fill="none"
+          stroke="{{ row.color }}"
+          stroke-width="25"
+          pathLength="100"
+          stroke-dasharray="{{ row.current_percentage }} {{ row.chart_gap }}"
+          stroke-dashoffset="{{ row.chart_offset }}"
+          transform="rotate(-90 110 110)"
+        />
+        {% endif %}{% endfor %}{% endlocalize %}
+        <text x="110" y="106" text-anchor="middle" class="chart-center">
+          100%
+        </text>
+        <text x="110" y="127" text-anchor="middle" class="chart-caption">
+          Current allocation
+        </text>
+      </svg>
+      <figcaption>
+        Holdings market value
+        <strong>{{ valuation.total_market_value|indian_currency }}</strong
+        ><span>Cash excluded · historical closing prices</span>
+      </figcaption>
+    </figure>
+    <div
+      class="table-scroll"
+      role="region"
+      aria-label="Asset class valuation comparison"
+      tabindex="0"
+    >
+      <table class="holdings-table">
+        <caption class="visually-hidden">
+          Current asset-class allocation compared with target version {{ valuation.target_version }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Asset class</th>
+            <th scope="col" class="numeric">Market value</th>
+            <th scope="col" class="numeric">Current</th>
+            <th scope="col" class="numeric">Target</th>
+            <th scope="col" class="numeric">Drift (pp)</th>
+            <th scope="col">Position</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in valuation.allocations %}
+          <tr>
+            <th scope="row">
+              <span
+                class="chart-key"
+                style="background-color: {{ row.color }}"
+                aria-hidden="true"
+              ></span
+              >{{ row.asset_class.name }}
+            </th>
+            <td class="numeric">{{ row.market_value|indian_currency }}</td>
+            <td class="numeric">{{ row.current_percentage|floatformat:2 }}%</td>
+            <td class="numeric">
+              {% if row.target_percentage != None %}{{ row.target_percentage|floatformat:2 }}%{% else %}—{% endif %}
+            </td>
+            <td
+              class="numeric{% if row.drift != None %} drift-{{ row.band }}{% endif %}"
+            >
+              {% if row.drift != None %}{% if row.drift > 0 %}+{% endif %}{{ row.drift|floatformat:2 }}{% else %}—{% endif %}
+            </td>
+            <td>
+              {% if row.direction %}<span
+                class="position-label drift-{{ row.band }}"
+                >{{ row.direction }}</span
+              >{% else %}No valid target{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %} 
+  {% if valuation.can_compare %}
+  <div class="valuation-actions">
+    <div>
+      <p class="page-footnote">
+        Compared with target version {{ valuation.target_version }}. Blue:
+        within ±2 points. Amber: above +2. Plum: below -2.
+      </p>
+      {% if valuation.rebalance_allowed and not valuation.recommend_rebalancing %}
+      <p class="page-footnote">
+        You are within the ±5-point safe limit. An optional rebalancing request
+        is available because at least one drift exceeds ±2 points.
+      </p>
+      {% endif %}
+    </div>
+    <form action="{% url 'sample_rebalance' %}" method="post">
+      {% csrf_token %}<button
+        class="button button-primary"
+        type="submit"
+        {% if not valuation.rebalance_allowed %}disabled{% endif %}
+      >
+        Request rebalancing <span aria-hidden="true">→</span>
+      </button>
+    </form>
+  </div>
+  {% elif valuation.status == 'missing_target' or valuation.status == 'invalid_target' %}
+  <a
+    class="button button-primary"
+    href="{% url 'target_allocation' %}"
+    >Set target allocation <span aria-hidden="true">→</span></a
+  >{% endif %}
+</section>

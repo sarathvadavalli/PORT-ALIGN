@@ -84,6 +84,9 @@ class PortfolioViewTests(TestCase):
         for text in ['My Investments', 'Instrument 0', 'SYM0', 'Equity', '500.00', 'Partial total', 'Unavailable']:
             self.assertContains(response, text)
         self.assertNotContains(response, 'Private Investments')
+        for value in ['1.23', '₹5.25', '₹12.35', '2.00', '₹25.00']:
+            self.assertContains(response, f'<td class="numeric">{value}</td>')
+        self.assertNotContains(response, '12.345678')
         self.assertEqual(response.context['portfolio'].pk, self.portfolio.pk)
         self.assertIn('no-store', response['Cache-Control'])
         self.assertContains(response, 'protected-history.js')
